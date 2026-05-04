@@ -1,0 +1,19 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: personnel-tracker
+  namespace: brohjoe1-dev
+  labels:
+    app: personnel-tracker
+spec:
+  host: personnel-tracker-brohjoe1-dev.apps.rm2.thpm.p1.openshiftapps.com
+  to:
+    kind: Service
+    name: personnel-tracker
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

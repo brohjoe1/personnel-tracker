@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: personnel-tracker
+  namespace: brohjoe1-dev
+  labels:
+    app: personnel-tracker
+spec:
+  type: ClusterIP
+  selector:
+    app: personnel-tracker
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
