@@ -31,6 +31,8 @@ spec:
           value: "kafka:9092"
         - name: SPRING_KAFKA_ADMIN_FAIL_FAST
           value: "false"
+        - name: SPRING_AUTOCONFIGURE_EXCLUDE
+          value: "org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration"
         resources:
           limits:
             memory: "512Mi"
@@ -43,8 +45,8 @@ spec:
             path: /actuator/health
             port: 8080
             scheme: HTTP
-          initialDelaySeconds: 45
-          periodSeconds: 10
+          initialDelaySeconds: 90
+          periodSeconds: 15
           timeoutSeconds: 5
           failureThreshold: 3
         readinessProbe:
@@ -52,7 +54,7 @@ spec:
             path: /actuator/health
             port: 8080
             scheme: HTTP
-          initialDelaySeconds: 30
-          periodSeconds: 5
+          initialDelaySeconds: 60
+          periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3

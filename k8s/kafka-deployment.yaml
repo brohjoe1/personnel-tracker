@@ -15,10 +15,19 @@ spec:
       labels:
         app: kafka
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: kafka
         image: apache/kafka:3.7.0
         imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
         ports:
         - containerPort: 9092
           name: plaintext
@@ -43,17 +52,23 @@ spec:
           value: "1@localhost:9093"
         - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
           value: "1"
+        - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+          value: "1"
+        - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
+          value: "1"
         - name: KAFKA_LOG_DIRS
           value: "/tmp/kraft-combined-logs"
+        - name: KAFKA_LOG_RETENTION_HOURS
+          value: "1"
         - name: CLUSTER_ID
           value: "MkU3OEVBNTcwNTJENDM2Qk"
         resources:
           limits:
-            memory: "1Gi"
-            cpu: "1000m"
-          requests:
             memory: "512Mi"
             cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
         volumeMounts:
         - name: kafka-logs
           mountPath: /tmp/kraft-combined-logs
