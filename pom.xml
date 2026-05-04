@@ -22,6 +22,7 @@
     </properties>
 
     <dependencies>
+
         <!-- Spring Web - REST API -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -47,10 +48,16 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- Actuator - health endpoint for OpenShift -->
+        <!-- Actuator - health endpoint for OpenShift liveness/readiness probes -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Spring Kafka - event streaming -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
         </dependency>
 
         <!-- Test -->
@@ -59,6 +66,14 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Spring Kafka Test - embedded broker for unit tests -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -69,4 +84,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
