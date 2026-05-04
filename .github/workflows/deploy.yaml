@@ -100,12 +100,20 @@ jobs:
         oc set image deployment/personnel-tracker \
           personnel-tracker=${{ env.IMAGE_NAME }}:${{ github.sha }}
 
+    - name: Wait for pod to initialize
+      run: sleep 30
+
     - name: Check pod status
       run: |
         echo "=== Pod Status ==="
         oc get pods -l app=personnel-tracker -n brohjoe1-dev
+        echo ""
+        echo "=== Pod Logs ==="
+        oc logs -l app=personnel-tracker -n brohjoe1-dev --tail=50 || true
+        echo ""
         echo "=== Recent Events ==="
         oc get events -n brohjoe1-dev --sort-by='.lastTimestamp' | tail -20
+        echo ""
         echo "=== Deployment Description ==="
         oc describe deployment personnel-tracker -n brohjoe1-dev
 
