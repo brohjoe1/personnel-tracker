@@ -13,7 +13,7 @@ jobs:
   build:
     name: Build & Test
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -57,17 +57,6 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.IMAGE_NAME }}
-        tags: |
-          type=ref,event=branch
-          type=sha,prefix={{branch}}-
-          type=sha,prefix=latest-
-          latest
-
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
@@ -109,11 +98,19 @@ jobs:
     - name: Update deployment with latest image
       run: |
         oc set image deployment/personnel-tracker \
-          personnel-tracker=${{ env.IMAGE_NAME }}:${{ github.sha }} \
-          --record=true
+          personnel-tracker=${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+    - name: Check pod status
+      run: |
+        echo "=== Pod Status ==="
+        oc get pods -l app=personnel-tracker -n brohjoe1-dev
+        echo "=== Recent Events ==="
+        oc get events -n brohjoe1-dev --sort-by='.lastTimestamp' | tail -20
+        echo "=== Deployment Description ==="
+        oc describe deployment personnel-tracker -n brohjoe1-dev
 
     - name: Wait for rollout
-      run: oc rollout status deployment/personnel-tracker -n brohjoe1-dev --timeout=5m
+      run: oc rollout status deployment/personnel-tracker -n brohjoe1-dev --timeout=10m
 
     - name: Verify deployment
       run: |

@@ -6,11 +6,11 @@ metadata:
   labels:
     app: personnel-tracker
 spec:
-  type: ClusterIP
   selector:
     app: personnel-tracker
   ports:
-  - port: 80
-    targetPort: 8080
-    protocol: TCP
-    name: http
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
