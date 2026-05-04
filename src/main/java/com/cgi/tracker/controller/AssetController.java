@@ -31,7 +31,7 @@ public class AssetController {
 
     // GET single asset
     @GetMapping("/{id}")
-    public ResponseEntity<Asset> getById(@PathVariable Long id) {
+    public ResponseEntity<Asset> getById(@PathVariable String id) {
         return ResponseEntity.ok(assetService.getById(id));
     }
 
@@ -43,7 +43,7 @@ public class AssetController {
 
     // GET assets for a specific personnel member
     @GetMapping("/personnel/{personnelId}")
-    public ResponseEntity<List<Asset>> getByPersonnel(@PathVariable Long personnelId) {
+    public ResponseEntity<List<Asset>> getByPersonnel(@PathVariable String personnelId) {
         return ResponseEntity.ok(assetService.getAssetsByPersonnel(personnelId));
     }
 
@@ -55,33 +55,33 @@ public class AssetController {
 
     // PUT update asset
     @PutMapping("/{id}")
-    public ResponseEntity<Asset> update(@PathVariable Long id,
+    public ResponseEntity<Asset> update(@PathVariable String id,
                                          @Valid @RequestBody Asset asset) {
         return ResponseEntity.ok(assetService.update(id, asset));
     }
 
     // PATCH assign asset to personnel
     @PatchMapping("/{id}/assign/{personnelId}")
-    public ResponseEntity<Asset> assign(@PathVariable Long id,
-                                         @PathVariable Long personnelId) {
+    public ResponseEntity<Asset> assign(@PathVariable String id,
+                                         @PathVariable String personnelId) {
         return ResponseEntity.ok(assetService.assign(id, personnelId));
     }
 
     // PATCH unassign asset
     @PatchMapping("/{id}/unassign")
-    public ResponseEntity<Asset> unassign(@PathVariable Long id) {
+    public ResponseEntity<Asset> unassign(@PathVariable String id) {
         return ResponseEntity.ok(assetService.unassign(id));
     }
 
     // PATCH send to maintenance
     @PatchMapping("/{id}/maintenance")
-    public ResponseEntity<Asset> maintenance(@PathVariable Long id) {
+    public ResponseEntity<Asset> maintenance(@PathVariable String id) {
         return ResponseEntity.ok(assetService.sendToMaintenance(id));
     }
 
     // DELETE asset
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable String id) {
         assetService.delete(id);
         return ResponseEntity.noContent().build();
     }

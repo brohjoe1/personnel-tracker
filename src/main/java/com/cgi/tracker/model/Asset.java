@@ -1,37 +1,30 @@
 package com.cgi.tracker.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "asset")
+@Document(collection = "assets")
 public class Asset {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @NotBlank(message = "Serial number is required")
-    @Column(name = "serial_number", unique = true, nullable = false)
+    @Indexed(unique = true)
     private String serialNumber;
 
     @NotBlank(message = "Asset name is required")
-    @Column(name = "name", nullable = false)
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "category")
     private AssetCategory category;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
     private AssetStatus status = AssetStatus.UNASSIGNED;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_to_id")
-    @JsonBackReference
-    private Personnel assignedTo;
+    // Reference to personnel by ID (String)
+    private String assignedToId;
+    private String assignedToName; // Denormalized for convenience
 
     // Enums
     public enum AssetCategory {
@@ -52,8 +45,8 @@ public class Asset {
     }
 
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
     public String getSerialNumber() { return serialNumber; }
     public void setSerialNumber(String serialNumber) { this.serialNumber = serialNumber; }
     public String getName() { return name; }
@@ -62,11 +55,8 @@ public class Asset {
     public void setCategory(AssetCategory category) { this.category = category; }
     public AssetStatus getStatus() { return status; }
     public void setStatus(AssetStatus status) { this.status = status; }
-    public Personnel getAssignedTo() { return assignedTo; }
-    public void setAssignedTo(Personnel assignedTo) { this.assignedTo = assignedTo; }
-
-    // Convenience: return just the assigned person's ID in JSON
-    public Long getAssignedToId() {
-        return assignedTo != null ? assignedTo.getId() : null;
-    }
+    public String getAssignedToId() { return assignedToId; }
+    public void setAssignedToId(String assignedToId) { this.assignedToId = assignedToId; }
+    public String getAssignedToName() { return assignedToName; }
+    public void setAssignedToName(String assignedToName) { this.assignedToName = assignedToName; }
 }

@@ -1,13 +1,13 @@
 package com.cgi.tracker.repository;
 
 import com.cgi.tracker.model.Asset;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AssetRepository extends JpaRepository<Asset, Long> {
+public interface AssetRepository extends MongoRepository<Asset, String> {
 
     Optional<Asset> findBySerialNumber(String serialNumber);
 
@@ -15,7 +15,7 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
 
     List<Asset> findByCategory(Asset.AssetCategory category);
 
-    List<Asset> findByAssignedToId(Long personnelId);
+    List<Asset> findByAssignedToId(String personnelId);
 
-    List<Asset> findByAssignedToIsNull();
+    List<Asset> findByAssignedToIdIsNull();
 }

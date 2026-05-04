@@ -25,7 +25,7 @@ public class PersonnelService {
         return personnelRepository.findByActiveTrue();
     }
 
-    public Personnel getById(Long id) {
+    public Personnel getById(String id) {
         return personnelRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Personnel not found with id: " + id));
     }
@@ -45,7 +45,7 @@ public class PersonnelService {
         return personnelRepository.save(personnel);
     }
 
-    public Personnel update(Long id, Personnel updated) {
+    public Personnel update(String id, Personnel updated) {
         Personnel existing = getById(id);
         existing.setFirstName(updated.getFirstName());
         existing.setLastName(updated.getLastName());
@@ -56,17 +56,13 @@ public class PersonnelService {
         return personnelRepository.save(existing);
     }
 
-    public void deactivate(Long id) {
+    public void deactivate(String id) {
         Personnel personnel = getById(id);
         personnel.setActive(false);
         personnelRepository.save(personnel);
     }
 
-    public void delete(Long id) {
+    public void delete(String id) {
         personnelRepository.deleteById(id);
-    }
-
-    public List<Personnel> getPersonnelWithAssets() {
-        return personnelRepository.findPersonnelWithAssignedAssets();
     }
 }

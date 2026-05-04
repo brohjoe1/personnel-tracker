@@ -1,5 +1,7 @@
 package com.cgi.tracker.service;
 
+import com.cgi.tracker.kafka.AssetEvent;
+import com.cgi.tracker.kafka.AssetEventProducer;
 import com.cgi.tracker.model.Asset;
 import com.cgi.tracker.model.Personnel;
 import com.cgi.tracker.repository.AssetRepository;
@@ -15,17 +17,21 @@ public class AssetService {
 
     private final AssetRepository assetRepository;
     private final PersonnelRepository personnelRepository;
+    private final AssetEventProducer eventProducer;
 
-    public AssetService(AssetRepository assetRepository, PersonnelRepository personnelRepository) {
+    public AssetService(AssetRepository assetRepository, 
+                        PersonnelRepository personnelRepository,
+                        AssetEventProducer eventProducer) {
         this.assetRepository = assetRepository;
         this.personnelRepository = personnelRepository;
+        this.eventProducer = eventProducer;
     }
 
     public List<Asset> getAllAssets() {
         return assetRepository.findAll();
     }
 
-    public Asset getById(Long id) {
+    public Asset getById(String id) {
         return assetRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Asset not found with id: " + id));
     }
@@ -39,10 +45,10 @@ public class AssetService {
     }
 
     public List<Asset> getUnassignedAssets() {
-        return assetRepository.findByAssignedToIsNull();
+        return assetRepository.findByAssignedToIdIsNull();
     }
 
-    public List<Asset> getAssetsByPersonnel(Long personnelId) {
+    public List<Asset> getAssetsByPersonnel(String personnelId) {
         return assetRepository.findByAssignedToId(personnelId);
     }
 
@@ -50,7 +56,7 @@ public class AssetService {
         return assetRepository.save(asset);
     }
 
-    public Asset update(Long id, Asset updated) {
+    public Asset update(String id, Asset updated) {
         Asset existing = getById(id);
         existing.setName(updated.getName());
         existing.setSerialNumber(updated.getSerialNumber());
@@ -60,7 +66,7 @@ public class AssetService {
     }
 
     // Assign asset to a personnel member
-    public Asset assign(Long assetId, Long personnelId) {
+    public Asset assign(String assetId, String personnelId) {
         Asset asset = getById(assetId);
         Personnel personnel = personnelRepository.findById(personnelId)
                 .orElseThrow(() -> new EntityNotFoundException("Personnel not found with id: " + personnelId));
@@ -69,28 +75,47 @@ public class AssetService {
             throw new IllegalStateException("Cannot assign asset currently in maintenance: " + assetId);
         }
 
-        asset.setAssignedTo(personnel);
+        asset.setAssignedToId(personnelId);
+        asset.setAssignedToName(personnel.getFirstName() + " " + personnel.getLastName());
         asset.setStatus(Asset.AssetStatus.ASSIGNED);
-        return assetRepository.save(asset);
+        Asset saved = assetRepository.save(asset);
+        
+        eventProducer.publishAssetEvent(new AssetEvent(
+                saved.getId(), saved.getSerialNumber(), saved.getName(),
+                "ASSIGNED", personnelId,
+                personnel.getFirstName() + " " + personnel.getLastName()));
+        
+        return saved;
     }
 
     // Unassign asset from personnel
-    public Asset unassign(Long assetId) {
+    public Asset unassign(String assetId) {
         Asset asset = getById(assetId);
-        asset.setAssignedTo(null);
+        String personnelName = asset.getAssignedToName() != null ? asset.getAssignedToName() : "N/A";
+        String personnelId = asset.getAssignedToId();
+        
+        asset.setAssignedToId(null);
+        asset.setAssignedToName(null);
         asset.setStatus(Asset.AssetStatus.UNASSIGNED);
-        return assetRepository.save(asset);
+        Asset saved = assetRepository.save(asset);
+        
+        eventProducer.publishAssetEvent(new AssetEvent(
+                saved.getId(), saved.getSerialNumber(), saved.getName(),
+                "UNASSIGNED", personnelId, personnelName));
+        
+        return saved;
     }
 
     // Send asset to maintenance
-    public Asset sendToMaintenance(Long assetId) {
+    public Asset sendToMaintenance(String assetId) {
         Asset asset = getById(assetId);
-        asset.setAssignedTo(null);
+        asset.setAssignedToId(null);
+        asset.setAssignedToName(null);
         asset.setStatus(Asset.AssetStatus.MAINTENANCE);
         return assetRepository.save(asset);
     }
 
-    public void delete(Long id) {
+    public void delete(String id) {
         assetRepository.deleteById(id);
     }
 }

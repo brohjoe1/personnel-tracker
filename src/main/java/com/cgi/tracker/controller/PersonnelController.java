@@ -33,14 +33,8 @@ public class PersonnelController {
 
     // GET single personnel by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Personnel> getById(@PathVariable Long id) {
+    public ResponseEntity<Personnel> getById(@PathVariable String id) {
         return ResponseEntity.ok(personnelService.getById(id));
-    }
-
-    // GET personnel with assigned assets
-    @GetMapping("/with-assets")
-    public ResponseEntity<List<Personnel>> getWithAssets() {
-        return ResponseEntity.ok(personnelService.getPersonnelWithAssets());
     }
 
     // POST create new personnel
@@ -52,21 +46,21 @@ public class PersonnelController {
 
     // PUT update personnel
     @PutMapping("/{id}")
-    public ResponseEntity<Personnel> update(@PathVariable Long id,
+    public ResponseEntity<Personnel> update(@PathVariable String id,
                                              @Valid @RequestBody Personnel personnel) {
         return ResponseEntity.ok(personnelService.update(id, personnel));
     }
 
     // PATCH deactivate personnel (soft delete)
     @PatchMapping("/{id}/deactivate")
-    public ResponseEntity<Void> deactivate(@PathVariable Long id) {
+    public ResponseEntity<Void> deactivate(@PathVariable String id) {
         personnelService.deactivate(id);
         return ResponseEntity.noContent().build();
     }
 
     // DELETE personnel
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable String id) {
         personnelService.delete(id);
         return ResponseEntity.noContent().build();
     }

@@ -6,8 +6,8 @@ A Spring Boot REST API simulating a government personnel and equipment tracking 
 
 ## Tech Stack
 - Java 17 + Spring Boot 3.2
-- Spring Data JPA / Hibernate
-- H2 in-memory database (swap for PostgreSQL in production)
+- Spring Data MongoDB
+- MongoDB Atlas (cloud database)
 - Apache Kafka event streaming
 - Spring Actuator (health/readiness probes)
 - Deployed on Red Hat OpenShift Service on AWS
@@ -28,7 +28,6 @@ Asset status changes (ASSIGNED → UNASSIGNED → MAINTENANCE) publish Kafka eve
 | GET | /api/personnel/{id} | Get by ID |
 | GET | /api/personnel?unit=X | Filter by unit |
 | GET | /api/personnel?rank=X | Filter by rank |
-| GET | /api/personnel/with-assets | Personnel with assigned assets |
 | POST | /api/personnel | Create personnel |
 | PUT | /api/personnel/{id} | Update personnel |
 | PATCH | /api/personnel/{id}/deactivate | Soft delete |
@@ -57,12 +56,34 @@ Asset status changes (ASSIGNED → UNASSIGNED → MAINTENANCE) publish Kafka eve
 
 ## Running Locally
 
-### Quick Start
+### Quick Start - MongoDB Atlas (Recommended)
+
+1. Create a free MongoDB Atlas account at https://www.mongodb.com/cloud/atlas
+2. Create a free M0 cluster
+3. Create a database user with username `personnel_user`
+4. Get your connection string (looks like: `mongodb+srv://personnel_user:PASSWORD@cluster0.xxxxx.mongodb.net/personnel_tracker`)
+5. Set the environment variable and run:
+
 ```bash
+export MONGODB_URI="mongodb+srv://personnel_user:password@cluster0.xxxxx.mongodb.net/personnel_tracker"
 mvn spring-boot:run
 ```
 
-The application starts on `http://localhost:8080` with an in-memory H2 database. Note: Kafka is optional locally and will gracefully degrade if not available.
+### Quick Start - Local MongoDB with Docker
+
+Start a local MongoDB instance:
+```bash
+docker run -d -p 27017:27017 --name mongodb mongo:7.0
+
+mvn spring-boot:run
+```
+
+Stop MongoDB:
+```bash
+docker stop mongodb && docker rm mongodb
+```
+
+The application starts on `http://localhost:8080` with a local MongoDB database. Note: Kafka is optional locally and will gracefully degrade if not available.
 
 ### Local Development with Docker Compose
 
@@ -84,6 +105,7 @@ docker run -d --name kafka \
   -p 9092:9092 apache/kafka:3.7.0
 
 # Run the application with Kafka enabled
+export MONGODB_URI="mongodb://localhost:27017/personnel_tracker"
 mvn spring-boot:run -Dspring.kafka.bootstrap-servers=localhost:9092
 ```
 
@@ -198,7 +220,18 @@ This script:
 
 ### Deployment Flow
 
-Once the service account is set up, deployments happen automatically:
+Once the service account is set up, you must also set up the MongoDB connection secret:
+
+```bash
+# Create MongoDB secret in OpenShift
+oc create secret generic mongodb-secret \
+  --from-literal=uri="your-mongodb-atlas-uri" \
+  -n brohjoe1-dev
+```
+
+Replace `your-mongodb-atlas-uri` with your actual MongoDB Atlas connection string.
+
+Then deployments happen automatically:
 
 1. **Push to main** → GitHub Actions workflow triggers
 2. **Build & Test** → Runs Maven build with JUnit tests

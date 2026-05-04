@@ -8,3 +8,5 @@ target/
 .vscode/
 .DS_Store
 application-local.properties
+k8s/mongodb-secret.yaml
+*.env
