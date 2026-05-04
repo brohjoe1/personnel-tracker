@@ -14,7 +14,7 @@
     <groupId>com.cgi</groupId>
     <artifactId>personnel-tracker</artifactId>
     <version>1.0.0</version>
-    <name>CGI Personnel & Asset Tracker</name>
+    <name>CGI Personnel &amp; Asset Tracker</name>
     <description>Government personnel and equipment tracking REST API</description>
 
     <properties>
