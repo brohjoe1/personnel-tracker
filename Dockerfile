@@ -1,16 +1,16 @@
 # Multi-stage Dockerfile for CGI Personnel & Asset Tracker
 # Stage 1: Build JAR using Maven and OpenJDK
-FROM eclipse-temurin:17-jdk-alpine AS builder
+FROM maven:3.9-eclipse-temurin-17-alpine AS builder
 
 WORKDIR /build
 
-# Copy Maven files
+# Copy Maven files and download dependencies first (cached layer)
 COPY pom.xml .
-COPY src src
+RUN mvn dependency:go-offline -q
 
-# Build the application, skipping tests
-RUN --mount=type=cache,target=/root/.m2 \
-    mvn clean package -DskipTests -q
+# Copy source and build
+COPY src src
+RUN mvn clean package -DskipTests -q
 
 # Stage 2: Runtime image
 FROM eclipse-temurin:17-jre-alpine
