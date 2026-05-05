@@ -33,10 +33,18 @@ spec:
             secretKeyRef:
               name: mongodb-secret
               key: uri
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          valueFrom:
+            secretKeyRef:
+              name: confluent-kafka-secret
+              key: bootstrap-servers
+        - name: KAFKA_SASL_JAAS_CONFIG
+          valueFrom:
+            secretKeyRef:
+              name: confluent-kafka-secret
+              key: sasl-jaas-config
         - name: SPRING_KAFKA_ADMIN_FAIL_FAST
           value: "false"
-        # - name: SPRING_AUTOCONFIGURE_EXCLUDE
-        #   value: "org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration"
         resources:
           limits:
             memory: "512Mi"
