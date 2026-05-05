@@ -118,7 +118,7 @@ jobs:
         oc describe deployment personnel-tracker -n brohjoe1-dev
 
     - name: Wait for rollout
-      run: oc rollout status deployment/personnel-tracker -n brohjoe1-dev --timeout=10m
+      run: oc rollout status deployment/personnel-tracker -n brohjoe1-dev --timeout=15m
 
     - name: Verify deployment
       run: |
