@@ -35,8 +35,8 @@ spec:
               key: uri
         - name: SPRING_KAFKA_ADMIN_FAIL_FAST
           value: "false"
-        - name: SPRING_AUTOCONFIGURE_EXCLUDE
-          value: "org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration"
+        # - name: SPRING_AUTOCONFIGURE_EXCLUDE
+        #   value: "org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration"
         resources:
           limits:
             memory: "512Mi"
