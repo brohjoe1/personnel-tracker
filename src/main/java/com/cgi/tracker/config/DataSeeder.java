@@ -25,37 +25,59 @@ public class DataSeeder {
             }
 
             log.info("Seeding database...");
+            try {
+                Personnel mitchell = personnelRepo.save(new Personnel(
+                        "James", "Mitchell", "SSG", "1st Logistics Battalion", "j.mitchell@army.mil"));
+                log.info("Saved mitchell: {}", mitchell.getId());
 
-            Personnel mitchell = personnelRepo.save(new Personnel(
-                    "James", "Mitchell", "SSG", "1st Logistics Battalion", "j.mitchell@army.mil"));
-            Personnel torres = personnelRepo.save(new Personnel(
-                    "Sandra", "Torres", "CPT", "HHC 3rd Brigade", "s.torres@army.mil"));
-            Personnel wallace = personnelRepo.save(new Personnel(
-                    "Kevin", "Wallace", "SPC", "204th Support Company", "k.wallace@army.mil"));
-            Personnel chen = personnelRepo.save(new Personnel(
-                    "Diana", "Chen", "LTC", "G4 Division", "d.chen@army.mil"));
+                Personnel torres = personnelRepo.save(new Personnel(
+                        "Sandra", "Torres", "CPT", "HHC 3rd Brigade", "s.torres@army.mil"));
+                log.info("Saved torres: {}", torres.getId());
 
-            assetRepo.save(createAsset("SN-M4-00142", "M4 Carbine",
-                    Asset.AssetCategory.WEAPON, Asset.AssetStatus.ASSIGNED,
-                    mitchell.getId(), "James Mitchell"));
-            assetRepo.save(createAsset("SN-HMMWV-0887", "HMMWV",
-                    Asset.AssetCategory.VEHICLE, Asset.AssetStatus.ASSIGNED,
-                    torres.getId(), "Sandra Torres"));
-            assetRepo.save(createAsset("SN-PRC152-0034", "AN/PRC-152 Radio",
-                    Asset.AssetCategory.COMMS, Asset.AssetStatus.ASSIGNED,
-                    mitchell.getId(), "James Mitchell"));
-            assetRepo.save(createAsset("SN-LAPTOP-2201", "Toughbook CF-33",
-                    Asset.AssetCategory.EQUIPMENT, Asset.AssetStatus.ASSIGNED,
-                    chen.getId(), "Diana Chen"));
-            assetRepo.save(createAsset("SN-M4-00199", "M4 Carbine",
-                    Asset.AssetCategory.WEAPON, Asset.AssetStatus.UNASSIGNED,
-                    null, null));
-            assetRepo.save(createAsset("SN-GEN-0055", "Generator 5KW",
-                    Asset.AssetCategory.EQUIPMENT, Asset.AssetStatus.MAINTENANCE,
-                    null, null));
+                Personnel wallace = personnelRepo.save(new Personnel(
+                        "Kevin", "Wallace", "SPC", "204th Support Company", "k.wallace@army.mil"));
+                log.info("Saved wallace: {}", wallace.getId());
 
-            log.info("Database seeded: {} personnel, {} assets",
-                    personnelRepo.count(), assetRepo.count());
+                Personnel chen = personnelRepo.save(new Personnel(
+                        "Diana", "Chen", "LTC", "G4 Division", "d.chen@army.mil"));
+                log.info("Saved chen: {}", chen.getId());
+
+                assetRepo.save(createAsset("SN-M4-00142", "M4 Carbine",
+                        Asset.AssetCategory.WEAPON, Asset.AssetStatus.ASSIGNED,
+                        mitchell.getId(), "James Mitchell"));
+                log.info("Saved asset SN-M4-00142");
+
+                assetRepo.save(createAsset("SN-HMMWV-0887", "HMMWV",
+                        Asset.AssetCategory.VEHICLE, Asset.AssetStatus.ASSIGNED,
+                        torres.getId(), "Sandra Torres"));
+                log.info("Saved asset SN-HMMWV-0887");
+
+                assetRepo.save(createAsset("SN-PRC152-0034", "AN/PRC-152 Radio",
+                        Asset.AssetCategory.COMMS, Asset.AssetStatus.ASSIGNED,
+                        mitchell.getId(), "James Mitchell"));
+                log.info("Saved asset SN-PRC152-0034");
+
+                assetRepo.save(createAsset("SN-LAPTOP-2201", "Toughbook CF-33",
+                        Asset.AssetCategory.EQUIPMENT, Asset.AssetStatus.ASSIGNED,
+                        chen.getId(), "Diana Chen"));
+                log.info("Saved asset SN-LAPTOP-2201");
+
+                assetRepo.save(createAsset("SN-M4-00199", "M4 Carbine",
+                        Asset.AssetCategory.WEAPON, Asset.AssetStatus.UNASSIGNED,
+                        "", ""));
+                log.info("Saved asset SN-M4-00199");
+
+                assetRepo.save(createAsset("SN-GEN-0055", "Generator 5KW",
+                        Asset.AssetCategory.EQUIPMENT, Asset.AssetStatus.MAINTENANCE,
+                        "", ""));
+                log.info("Saved asset SN-GEN-0055");
+
+                log.info("Database seeded successfully: {} personnel, {} assets",
+                        personnelRepo.count(), assetRepo.count());
+
+            } catch (Exception e) {
+                log.error("DataSeeder failed at: {}", e.getMessage(), e);
+            }
         };
     }
 
