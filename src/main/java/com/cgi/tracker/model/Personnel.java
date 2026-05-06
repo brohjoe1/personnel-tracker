@@ -1,6 +1,5 @@
 package com.cgi.tracker.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
